@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "sentx"
+version = "0.1.0"
+description = "sentiment analysis service"
+authors = ["junaid <junaid@neurithm.in>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+transformers = {version = "4.38.2", extras = ["torch"]}
+
+
+[tool.poetry.group.dev.dependencies]
+jupyterlab = "^4.2.4"
+pandas = "^2.2.2"
+sentence-transformers = "^3.0.1"
+scikit-learn = "^1.5.1"
+matplotlib = "^3.9.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
