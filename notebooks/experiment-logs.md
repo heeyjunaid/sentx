@@ -43,4 +43,16 @@ To verify the hypothesis
 3. points which are labeled as 4 or 0 and comes in 2nd cluster, are again passed through pretrained sentiment analysis model to verify the results.
 
 From above the original hypothesis it is clear that
-1. there are three classes - positive, negative and neutral
+1. there are three classes - positive, negative and neutral (1, 0, 2)
+
+
+### model used
+clustering -> thenlper/gte-base
+neutral confirmation -> finiteautomata/bertweet-base-sentiment-analysis
+
+
+### Training Exp 1
+1. relabel cleaned training data with clustering from embedding model, use it to train:
+ - SVM
+ - KNN
+
