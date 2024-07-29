@@ -55,4 +55,12 @@ neutral confirmation -> finiteautomata/bertweet-base-sentiment-analysis
 1. relabel cleaned training data with clustering from embedding model, use it to train:
  - SVM
  - KNN
+ - Logistic Regression
+
+
+ Could Have tried
+ 1. cleaning -> removing repeated punctuations, name, unknown chars like - &gt etc
+ 2. Use better embedding models. 
+ 3. uncase sentences
+ 
 

@@ -39,7 +39,7 @@ def get_class_from_prediction(label:int) -> Optional[str]:
 
 
 ENCODER_MODEL_NAME = safeGetWithDefault("ENCODER_MODEL_NAME", "thenlper/gte-base")
-SENTIMENT_MODEL_NAME = safeGetWithDefault("SENTIMENT_MODEL_NAME", "../data/models/sentiment-classifier-svc.pkl")
+SENTIMENT_MODEL_NAME = safeGetWithDefault("SENTIMENT_MODEL_NAME", "./models/sentiment-classifier-lr.pkl")
 
 SENTIMENT_MODEL = load_model(SENTIMENT_MODEL_NAME)
 ENCODER_MODEL = SentenceTransformer(ENCODER_MODEL_NAME)

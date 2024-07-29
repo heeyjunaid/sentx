@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify
 
 from app.utils import init_logger
 from app.types import DetectSentimentRequest, BatchDetectSentimentResponse
-from app.detect import predict_sentiment
+from app.detect import predict_sentiment_one
 
 logger=init_logger(__name__)
 sentx_app = Blueprint("sentx_app", __name__)
@@ -23,9 +23,17 @@ def health_check():
 @sentx_app.post("/detect")
 def detect_sentiment():
     req = request.json
-    req = DetectSentimentRequest(**req)
-    res = predict_sentiment(req.text)
-    return jsonify(res)
+    text = req.get("text", None)
+
+    if len(text) < 0:
+        return jsonify(
+            {
+                "message": "text is invalid"
+            }
+        )
+
+    res = predict_sentiment_one(text)
+    return jsonify(res.model_dump())
 
 
 @sentx_app.post("/batch/detect")

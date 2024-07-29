@@ -2,7 +2,7 @@ import re
 from typing import Optional, List
 
 from app.config import ENCODER_MODEL, SENTIMENT_MODEL, get_class_from_prediction
-from app.types import SetimentScore
+from app.types import SetimentScore, DetectSentimentRequest, DetectSentimentResponse
 
 regex_url_matching = "https?://\S+|www.\S+"
 regex_userid_matching = "@\S+"
@@ -23,8 +23,47 @@ def clean_text(text:str) -> Optional[str]:
     
     return text
 
+def handle_batch_result(texts, clean_texts, pred_batch):
+    batch_response = []
+    for text, clean_text, pred in zip(texts, clean_texts, pred_batch):
+        result = [
+            SetimentScore("negative", pred[0]),
+            SetimentScore("positive", pred[1]),
+            SetimentScore("neutral", pred[2])
+        ]
+        
+        batch_response.append(DetectSentimentResponse(
+            text=text,
+            processed_text=clean_text,
+            sentiment_results=result
+        ))
 
-def predict_sentiment(texts : str | List[str]) -> List[SetimentScore]:
+    return batch_response
+
+
+def predict_sentiment_one(text):
+    ctext = clean_text(text)
+
+    if ctext is None:
+        return None
+    
+    text_emb = ENCODER_MODEL.encode([ctext])
+    pred = SENTIMENT_MODEL.predict_proba(text_emb)
+
+    result = [
+                SetimentScore(label="negative", score=pred[0][0]),
+                SetimentScore(label="positive", score=pred[0][1]),
+                SetimentScore(label="neutral", score=pred[0][2])
+            ]
+    
+    return DetectSentimentResponse(
+            text=text,
+            processed_text=ctext,
+            sentiment_results=result
+        )
+
+
+def predict_sentiment(texts : str | List[str]) -> List[DetectSentimentResponse]:
     
     if isinstance(texts, str):
         texts = [texts]
@@ -38,12 +77,5 @@ def predict_sentiment(texts : str | List[str]) -> List[SetimentScore]:
     
 
     text_emb = ENCODER_MODEL.encode(clean_texts)
-    pred = SENTIMENT_MODEL.predict(text_emb)
-    results = []
-
-    for p in pred:
-        label = get_class_from_prediction(p)
-        s = SetimentScore(label, score=0)
-        results.append(s)
-
-    return results
+    pred = SENTIMENT_MODEL.predict_proba(text_emb)
+    return handle_batch_result(texts, clean_texts, pred)

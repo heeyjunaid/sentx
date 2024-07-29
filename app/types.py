@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 from uuid import UUID
 
@@ -16,8 +16,9 @@ class SetimentScore(BaseModel):
 
 class DetectSentimentResponse(BaseModel):
     text : str
-    config : None
-    job_id: UUID
+    processed_text:str
+    config : dict = None
+    job_id: Optional[UUID] = None
     sentiment_results : List[SetimentScore]
 
 class BatchDetectSentimentResponse(BaseModel):
