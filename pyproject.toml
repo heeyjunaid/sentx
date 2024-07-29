@@ -10,6 +10,8 @@ python = "^3.10"
 transformers = {version = "4.38.2", extras = ["torch"]}
 pydantic = "^2.8.2"
 flask = "^3.0.3"
+sentence-transformers = "^3.0.1"
+gunicorn = "^22.0.0"
 
 
 [tool.poetry.group.dev.dependencies]

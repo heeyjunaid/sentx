@@ -5,9 +5,25 @@ from flask import Blueprint, request, jsonify
 from app.utils import init_logger
 from app.types import DetectSentimentRequest, BatchDetectSentimentResponse
 from app.detect import predict_sentiment_one
+from werkzeug.exceptions import HTTPException
+
 
 logger=init_logger(__name__)
 sentx_app = Blueprint("sentx_app", __name__)
+
+@sentx_app.errorhandler(Exception)
+def handle_exception(e):
+    if isinstance(e, HTTPException):
+        response = {
+            "error": e.description,
+            "code": e.code
+        }
+    else:
+        response = {
+            "error": str(e),
+            "code": 500
+        }
+    return jsonify(response), response["code"]
 
 
 @sentx_app.get("/")
@@ -24,14 +40,6 @@ def health_check():
 def detect_sentiment():
     req = request.json
     text = req.get("text", None)
-
-    if len(text) < 0:
-        return jsonify(
-            {
-                "message": "text is invalid"
-            }
-        )
-
     res = predict_sentiment_one(text)
     return jsonify(res.model_dump())
 

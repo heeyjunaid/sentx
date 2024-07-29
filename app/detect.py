@@ -1,4 +1,5 @@
 import re
+from flask import abort
 from typing import Optional, List
 
 from app.config import ENCODER_MODEL, SENTIMENT_MODEL, get_class_from_prediction
@@ -42,18 +43,24 @@ def handle_batch_result(texts, clean_texts, pred_batch):
 
 
 def predict_sentiment_one(text):
+    if not text:
+        abort(400, description="no valid text for sentiment detection found")
+
     ctext = clean_text(text)
 
     if ctext is None:
-        return None
+        abort(400, description="no valid text for sentiment detection found")
     
-    text_emb = ENCODER_MODEL.encode([ctext])
-    pred = SENTIMENT_MODEL.predict_proba(text_emb)
+    try:
+        text_emb = ENCODER_MODEL.encode([ctext])
+        pred = SENTIMENT_MODEL.predict_proba(text_emb)
+    except Exception as error:
+        abort(500, description="something went wrong with while calculating sentiment of text")
 
     result = [
-                SetimentScore(label="negative", score=pred[0][0]),
-                SetimentScore(label="positive", score=pred[0][1]),
-                SetimentScore(label="neutral", score=pred[0][2])
+                SetimentScore(label="negative", score=round(pred[0][0], 4)),
+                SetimentScore(label="positive", score=round(pred[0][1], 4)),
+                SetimentScore(label="neutral", score=round(pred[0][2], 4))
             ]
     
     return DetectSentimentResponse(
