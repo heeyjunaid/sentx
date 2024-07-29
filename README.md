@@ -65,3 +65,5 @@ this will return following response
     "text": "hello world!"
 }
 ```
+
+further details about data cleaning model training can be found [here](./model-details.md)
